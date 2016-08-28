@@ -1,27 +1,47 @@
 package interpreter
 
 import (
-	// "fmt"
+  "strings"
 )
 
-func ExecGet(args []string) string {
-	options := map[string]func([]string) string {
-		"sql": GetSql,
-	}
+func ExecCommand(command string) string {
+  if len(command) == 0 {
+    return "No command given"
+  }
 
-	// Make sure there are enough arguments provided.
-	if len(args) < 1 {
-		return "Not enough arguments."
-	}
+  args := strings.Split(command, " ")
+  if len(args) == 0 {
+    return "No args presented"
+  }
 
-	// Check that the command exists in the options map, then execute it.
-	if val, ok := options[args[0]]; ok {
-		return val(args[1:])
-	}
+  commands := map[string]func([]string) string {
+    "get": ExecGet,
+  }
 
-	return "That's not a valid target of the get command."
+  if command, ok := commands[args[0]]; ok {
+    return command(args[1:])
+  }
+
+  return "Invalid command."
 }
 
-func GetSql(args []string) string {
-	return `CREATE TABLE hamburgers`
+func ExecGet(args []string) string {
+  commands := map[string]func([]string) string {
+    "sql": ExecGetSql,
+    "json": ExecGetJson,
+  }
+
+  if len(args) == 0 {
+    return "No args presented for get command"
+  }
+
+  return CheckAndExecCommand(args, commands)
+  return "That's not a valid target of the get command."
+}
+
+func CheckAndExecCommand(args []string, commands map[string]func([]string) string) string {
+  if command, ok := commands[args[0]]; ok {
+    return command(args[1:])
+  }
+  return "Unable to execute command."
 }
