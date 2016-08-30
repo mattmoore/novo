@@ -1,47 +1,47 @@
 package interpreter
 
 import (
-  "strings"
+	"strings"
 )
 
 func ExecCommand(command string) string {
-  if len(command) == 0 {
-    return "No command given"
-  }
+	if len(command) == 0 {
+		return "No command given"
+	}
 
-  args := strings.Split(command, " ")
-  if len(args) == 0 {
-    return "No args presented"
-  }
+	args := strings.Split(command, " ")
+	if len(args) == 0 {
+		return "No args presented"
+	}
 
-  commands := map[string]func([]string) string {
-    "get": ExecGet,
-  }
+	commands := map[string]func([]string) string{
+		"get": ExecGet,
+	}
 
-  if command, ok := commands[args[0]]; ok {
-    return command(args[1:])
-  }
+	if command, ok := commands[args[0]]; ok {
+		return command(args[1:])
+	}
 
-  return "Invalid command."
+	return "Invalid command."
 }
 
 func ExecGet(args []string) string {
-  commands := map[string]func([]string) string {
-    "sql": ExecGetSql,
-    "json": ExecGetJson,
-  }
+	commands := map[string]func([]string) string{
+		"sql":  ExecGetSql,
+		"json": ExecGetJson,
+	}
 
-  if len(args) == 0 {
-    return "No args presented for get command"
-  }
+	if len(args) == 0 {
+		return "No args presented for get command"
+	}
 
-  return CheckAndExecCommand(args, commands)
-  return "That's not a valid target of the get command."
+	return CheckAndExecCommand(args, commands)
+	return "That's not a valid target of the get command."
 }
 
 func CheckAndExecCommand(args []string, commands map[string]func([]string) string) string {
-  if command, ok := commands[args[0]]; ok {
-    return command(args[1:])
-  }
-  return "Unable to execute command."
+	if command, ok := commands[args[0]]; ok {
+		return command(args[1:])
+	}
+	return "Unable to execute command."
 }
