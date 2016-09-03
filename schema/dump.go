@@ -1,10 +1,9 @@
-package interpreter
+package schema
 
 import (
 	"database/sql"
 	"fmt"
 	_ "github.com/lib/pq"
-	"github.com/mattmoore/novo/schema"
 )
 
 func Connect(host string, dbname string) (sql.DB, error) {
@@ -15,16 +14,16 @@ func Connect(host string, dbname string) (sql.DB, error) {
 	return *db, err
 }
 
-func Dump(host string, dbname string) *schema.Schema {
+func Dump(host string, dbname string) *Schema {
 	conn, _ := Connect(host, dbname)
-	db := &schema.Database{
+	db := &Database{
 		Connection: conn,
 		Name:       dbname,
 	}
 	GetTables(db)
 	conn.Close()
-	s := &schema.Schema{
-		Databases: []*schema.Database{db},
+	s := &Schema{
+		Databases: []*Database{db},
 	}
 	s.Compile()
 	return s
@@ -42,7 +41,7 @@ func DumpFormat(host string, dbname string, format string) string {
 	}
 }
 
-func GetTables(db *schema.Database) {
+func GetTables(db *Database) {
 	rows, err := db.Connection.Query("SELECT tablename FROM pg_tables WHERE tableowner = $1", db.Name)
 	if err != nil {
 		fmt.Println(err)
@@ -53,7 +52,7 @@ func GetTables(db *schema.Database) {
 	for rows.Next() {
 		var tableName string
 		rows.Scan(&tableName)
-		table := &schema.Table{
+		table := &Table{
 			Name: tableName,
 		}
 		db.Tables = append(db.Tables, table)
@@ -67,7 +66,7 @@ func GetTables(db *schema.Database) {
 	}
 }
 
-func GetColumns(db *schema.Database, table *schema.Table) {
+func GetColumns(db *Database, table *Table) {
 	rows, err := db.Connection.Query("SELECT column_name, data_type from information_schema.columns WHERE table_catalog = $1 AND table_name = $2", db.Name, table.Name)
 	if err != nil {
 		fmt.Println(err)
@@ -79,7 +78,7 @@ func GetColumns(db *schema.Database, table *schema.Table) {
 		var colName string
 		var colType string
 		rows.Scan(&colName, &colType)
-		c := &schema.Column{
+		c := &Column{
 			Name: colName,
 			Type: colType,
 		}
@@ -87,8 +86,8 @@ func GetColumns(db *schema.Database, table *schema.Table) {
 	}
 }
 
-func GetPrimaryKeys(db *schema.Database, tablename string) []*schema.Column {
-	keys := []*schema.Column{}
+func GetPrimaryKeys(db *Database, tablename string) []*Column {
+	keys := []*Column{}
 
 	query := `SELECT a.attname, format_type(a.atttypid, a.atttypmod) AS data_type
 						FROM   pg_index i
@@ -111,7 +110,7 @@ func GetPrimaryKeys(db *schema.Database, tablename string) []*schema.Column {
 		if err != nil {
 			fmt.Println(err)
 		}
-		c := &schema.Column{
+		c := &Column{
 			Name: name,
 			Type: dataType,
 		}

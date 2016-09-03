@@ -2,6 +2,7 @@ package interpreter
 
 import (
 	"fmt"
+	"github.com/mattmoore/novo/schema"
 	"strings"
 )
 
@@ -32,7 +33,7 @@ func ExecDump(args []string) string {
 	dbname := args[1]
 	format := args[2]
 	if len(format) > 0 {
-		return DumpFormat(host, dbname, format)
+		return schema.DumpFormat(host, dbname, format)
 	}
 	return fmt.Sprintf("Invalid dump format [%s]", args[0])
 }
