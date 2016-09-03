@@ -22,6 +22,7 @@ func Parse(path string) *Schema {
 func processSchema(s *Schema) {
 	for _, db := range s.Databases {
 		for _, table := range db.Tables {
+			table.Database = db
 			for _, c := range table.Columns {
 				c.Table = table
 			}

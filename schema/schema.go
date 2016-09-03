@@ -20,6 +20,7 @@ type Table struct {
 	Name       string    `json:"name"`
 	PrimaryKey string    `json:"primary-key"`
 	Columns    []*Column `json:"columns"`
+	Database   *Database `json:"-"`
 }
 
 type Column struct {
