@@ -36,12 +36,11 @@ func ExecGet(args []string) string {
 	}
 
 	return CheckAndExecCommand(args, commands)
-	return "That's not a valid target of the get command."
 }
 
 func CheckAndExecCommand(args []string, commands map[string]func([]string) string) string {
 	if command, ok := commands[args[0]]; ok {
 		return command(args[1:])
 	}
-	return "Unable to execute command."
+	return "That's not a valid target of the get command."
 }

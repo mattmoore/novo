@@ -1,59 +1,56 @@
 {
-  "novo-schema":
-  {
-    "databases": [
-      {
-        "name": "database_1",
-        "tables": [
-          {
-            "name": "table_1",
-            "pk": "id",
-            "columns": [
-              {
-                "name": "id",
-                "sql-type": "bigint",
-                "null": "no"
-              },
-              {
-                "name": "test_column_1",
-                "sql-type": "varchar(500)",
-                "null": "yes"
-              },
-              {
-                "name": "test_column_2",
-                "sql-type": "varchar(200)",
-                "null": "no"
-              }
-            ]
-          },
-          {
-            "name": "table_2",
-            "pk": "id",
-            "columns": [
-              {
-                "name": "id",
-                "sql-type": "bigint",
-                "null": "no"
-              },
-              {
-                "name": "test_column_1",
-                "sql-type": "varchar(500)",
-                "null": "yes",
-                "foreign-key": "table_1(id)"
-              },
-              {
-                "name": "test_column_2",
-                "sql-type": "varchar(200)",
-                "null": "no",
-                "foreign-key": "table_1(test_column_1)"
-              }
-            ]
-          }
-        ]
-      },
-      {
-        "name": "database_2"
-      }
-    ]
-  }
+  "databases": [
+    {
+      "name": "database_1",
+      "tables": [
+        {
+          "name": "table_1",
+          "primary-key": "id",
+          "columns": [
+            {
+              "name": "id",
+              "type": "bigint",
+              "null": false
+            },
+            {
+              "name": "test_column_1",
+              "type": "varchar(500)",
+              "null": false
+            },
+            {
+              "name": "test_column_2",
+              "type": "varchar(200)",
+              "null": false
+            }
+          ]
+        },
+        {
+          "name": "table_2",
+          "primary-key": "id",
+          "columns": [
+            {
+              "name": "id",
+              "type": "bigint",
+              "null": false
+            },
+            {
+              "name": "test_column_1",
+              "type": "varchar(500)",
+              "null": false,
+              "foreign-key": "table_1(id)"
+            },
+            {
+              "name": "test_column_2",
+              "type": "varchar(200)",
+              "null": false,
+              "foreign-key": "table_1(test_column_1)"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "database_2"
+    }
+  ]
 }

@@ -1,57 +1,90 @@
 package schema
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
 	"strings"
 )
 
 type Schema struct {
-	Databases []*Database
+	Databases []*Database `json:"databases"`
 }
 
 type Database struct {
-	Name   string
-	Tables []*Table
+	Name   string   `json:"name"`
+	Tables []*Table `json:"tables"`
 }
 
 type Table struct {
-	Name    string
-	Columns []*Column
+	Name       string    `json:"name"`
+	PrimaryKey string    `json:"primary-key"`
+	Columns    []*Column `json:"columns"`
 }
 
 type Column struct {
-	Name       string
-	Type       string
-	PrimaryKey bool
+	Name  string `json:"name"`
+	Type  string `json:"type"`
+	Table *Table `json:"-"`
 }
 
-func (s *Schema) GetSchemaSql() string {
-	var sql string
-	for _, db := range s.Databases {
-		for _, table := range db.Tables {
-			sql += table.GetTableSql()
+func (t *Table) GetPrimaryKey() *Column {
+	for _, c := range t.Columns {
+		if c.Name == t.PrimaryKey {
+			return c
 		}
 	}
-	return sql
+	return nil
 }
 
-func (t *Table) GetTableSql() string {
-	var sql string
-	sql += fmt.Sprintf("CREATE TABLE %s (\n", t.Name)
+func (c *Column) IsPrimaryKey() bool {
+	if c.Name == c.Table.PrimaryKey {
+		return true
+	}
+	return false
+}
+
+// SQL export
+
+func (s *Schema) Sql() string {
+	var buffer bytes.Buffer
+	for _, db := range s.Databases {
+		var tables []string
+		for _, table := range db.Tables {
+			tables = append(tables, table.Sql())
+		}
+		buffer.WriteString(strings.Join(tables, "\n"))
+	}
+	return buffer.String()
+}
+
+func (t *Table) Sql() string {
+	var buffer bytes.Buffer
+	buffer.WriteString(fmt.Sprintf("CREATE TABLE %s (\n", t.Name))
 	columns := []string{}
 	for _, c := range t.Columns {
-		columns = append(columns, fmt.Sprintf("  %s", c.GetColumnSql()))
+		columns = append(columns, fmt.Sprintf("  %s", c.Sql()))
 	}
-	sql += strings.Join(columns, ",\n")
-	sql += "\n);\n"
-	return sql
+	buffer.WriteString(strings.Join(columns, ",\n"))
+	buffer.WriteString("\n);")
+	return buffer.String()
 }
 
-func (c *Column) GetColumnSql() string {
-	var sql string
-	sql += fmt.Sprintf("%s %s", c.Name, strings.ToUpper(c.Type))
-	if c.PrimaryKey {
-		sql += fmt.Sprintf(" PRIMARY KEY")
+func (c *Column) Sql() string {
+	var buffer bytes.Buffer
+	buffer.WriteString(fmt.Sprintf("%s %s", c.Name, strings.ToUpper(c.Type)))
+	if c.IsPrimaryKey() {
+		buffer.WriteString(fmt.Sprintf(" PRIMARY KEY"))
 	}
-	return sql
+	return buffer.String()
+}
+
+// JSON export
+
+func (s *Schema) Json() string {
+	buffer, err := json.MarshalIndent(s, "", "  ")
+	if err != nil {
+		return ""
+	}
+	return string(buffer)
 }

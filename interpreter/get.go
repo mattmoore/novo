@@ -1,9 +1,13 @@
 package interpreter
 
+import (
+	"github.com/mattmoore/novo/schema"
+)
+
 func ExecGetSql(args []string) string {
-	return `CREATE TABLE hamburgers`
+	return schema.Parse(args[0]).Sql()
 }
 
 func ExecGetJson(args []string) string {
-	return `{ "table": { "name": "hamburgers" } }`
+	return schema.Parse(args[0]).Json()
 }
