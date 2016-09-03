@@ -2,6 +2,7 @@ package schema
 
 import (
 	"bytes"
+	"database/sql"
 	"encoding/json"
 	"fmt"
 	"strings"
@@ -12,15 +13,16 @@ type Schema struct {
 }
 
 type Database struct {
-	Name   string   `json:"name"`
-	Tables []*Table `json:"tables"`
+	Connection sql.DB   `json:"-"`
+	Name       string   `json:"name"`
+	Tables     []*Table `json:"tables"`
 }
 
 type Table struct {
-	Name       string    `json:"name"`
-	PrimaryKey string    `json:"primary-key"`
-	Columns    []*Column `json:"columns"`
-	Database   *Database `json:"-"`
+	Name        string    `json:"name"`
+	PrimaryKeys []string  `json:"primary-keys"`
+	Columns     []*Column `json:"columns"`
+	Database    *Database `json:"-"`
 }
 
 type Column struct {
@@ -29,18 +31,32 @@ type Column struct {
 	Table *Table `json:"-"`
 }
 
-func (t *Table) GetPrimaryKey() *Column {
-	for _, c := range t.Columns {
-		if c.Name == t.PrimaryKey {
-			return c
+func (s *Schema) Compile() {
+	for _, db := range s.Databases {
+		for _, table := range db.Tables {
+			table.Database = db
+			for _, c := range table.Columns {
+				c.Table = table
+			}
 		}
 	}
-	return nil
+}
+
+func (t *Table) GetPrimaryKeys() []*Column {
+	keys := []*Column{}
+	for _, c := range t.Columns {
+		if c.IsPrimaryKey() {
+			keys = append(keys, c)
+		}
+	}
+	return keys
 }
 
 func (c *Column) IsPrimaryKey() bool {
-	if c.Name == c.Table.PrimaryKey {
-		return true
+	for _, key := range c.Table.PrimaryKeys {
+		if c.Name == key {
+			return true
+		}
 	}
 	return false
 }

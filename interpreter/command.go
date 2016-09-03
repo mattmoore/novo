@@ -1,6 +1,7 @@
 package interpreter
 
 import (
+	"fmt"
 	"strings"
 )
 
@@ -15,7 +16,8 @@ func ExecCommand(command string) string {
 	}
 
 	commands := map[string]func([]string) string{
-		"get": ExecGet,
+		"dump": ExecDump,
+		"get":  ExecGet,
 	}
 
 	if command, ok := commands[args[0]]; ok {
@@ -23,6 +25,16 @@ func ExecCommand(command string) string {
 	}
 
 	return "Invalid command."
+}
+
+func ExecDump(args []string) string {
+	host := args[0]
+	dbname := args[1]
+	format := args[2]
+	if len(format) > 0 {
+		return DumpFormat(host, dbname, format)
+	}
+	return fmt.Sprintf("Invalid dump format [%s]", args[0])
 }
 
 func ExecGet(args []string) string {

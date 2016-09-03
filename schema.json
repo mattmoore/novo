@@ -5,7 +5,7 @@
       "tables": [
         {
           "name": "table_1",
-          "primary-key": "id",
+          "primary-keys": ["id"],
           "columns": [
             {
               "name": "id",
@@ -26,7 +26,7 @@
         },
         {
           "name": "table_2",
-          "primary-key": "id",
+          "primary-keys": ["id"],
           "columns": [
             {
               "name": "id",
