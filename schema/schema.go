@@ -8,10 +8,6 @@ import (
 	"strings"
 )
 
-type Schema struct {
-	Databases []*Database `json:"databases"`
-}
-
 type Database struct {
 	Connection sql.DB   `json:"-"`
 	Name       string   `json:"name"`
@@ -31,13 +27,11 @@ type Column struct {
 	Table *Table `json:"-"`
 }
 
-func (s *Schema) Compile() {
-	for _, db := range s.Databases {
-		for _, table := range db.Tables {
-			table.Database = db
-			for _, c := range table.Columns {
-				c.Table = table
-			}
+func (db *Database) Compile() {
+	for _, table := range db.Tables {
+		table.Database = db
+		for _, c := range table.Columns {
+			c.Table = table
 		}
 	}
 }
@@ -63,15 +57,13 @@ func (c *Column) IsPrimaryKey() bool {
 
 // SQL export
 
-func (s *Schema) Sql() string {
+func (db *Database) Sql() string {
 	var buffer bytes.Buffer
-	for _, db := range s.Databases {
-		var tables []string
-		for _, table := range db.Tables {
-			tables = append(tables, table.Sql())
-		}
-		buffer.WriteString(strings.Join(tables, "\n"))
+	var tables []string
+	for _, table := range db.Tables {
+		tables = append(tables, table.Sql())
 	}
+	buffer.WriteString(strings.Join(tables, "\n"))
 	return buffer.String()
 }
 
@@ -98,8 +90,8 @@ func (c *Column) Sql() string {
 
 // JSON export
 
-func (s *Schema) Json() string {
-	buffer, err := json.MarshalIndent(s, "", "  ")
+func (db *Database) Json() string {
+	buffer, err := json.MarshalIndent(db, "", "  ")
 	if err != nil {
 		return ""
 	}

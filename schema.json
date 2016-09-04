@@ -1,56 +1,49 @@
 {
-  "databases": [
+  "name": "database_1",
+  "tables": [
     {
-      "name": "database_1",
-      "tables": [
+      "name": "table_1",
+      "primary-keys": ["id"],
+      "columns": [
         {
-          "name": "table_1",
-          "primary-keys": ["id"],
-          "columns": [
-            {
-              "name": "id",
-              "type": "bigint",
-              "null": false
-            },
-            {
-              "name": "test_column_1",
-              "type": "varchar(500)",
-              "null": false
-            },
-            {
-              "name": "test_column_2",
-              "type": "varchar(200)",
-              "null": false
-            }
-          ]
+          "name": "id",
+          "type": "bigint",
+          "null": false
         },
         {
-          "name": "table_2",
-          "primary-keys": ["id"],
-          "columns": [
-            {
-              "name": "id",
-              "type": "bigint",
-              "null": false
-            },
-            {
-              "name": "test_column_1",
-              "type": "varchar(500)",
-              "null": false,
-              "foreign-key": "table_1(id)"
-            },
-            {
-              "name": "test_column_2",
-              "type": "varchar(200)",
-              "null": false,
-              "foreign-key": "table_1(test_column_1)"
-            }
-          ]
+          "name": "test_column_1",
+          "type": "varchar(500)",
+          "null": false
+        },
+        {
+          "name": "test_column_2",
+          "type": "varchar(200)",
+          "null": false
         }
       ]
     },
     {
-      "name": "database_2"
+      "name": "table_2",
+      "primary-keys": ["id"],
+      "columns": [
+        {
+          "name": "id",
+          "type": "bigint",
+          "null": false
+        },
+        {
+          "name": "test_column_1",
+          "type": "varchar(500)",
+          "null": false,
+          "foreign-key": "table_1(id)"
+        },
+        {
+          "name": "test_column_2",
+          "type": "varchar(200)",
+          "null": false,
+          "foreign-key": "table_1(test_column_1)"
+        }
+      ]
     }
   ]
 }

@@ -5,16 +5,16 @@ import (
 	"io/ioutil"
 )
 
-func Parse(path string) *Schema {
+func Parse(path string) *Database {
 	fileContent, err := ioutil.ReadFile(path)
 	if err != nil {
 		return nil
 	}
-	s := &Schema{}
-	err = json.Unmarshal(fileContent, s)
+	db := &Database{}
+	err = json.Unmarshal(fileContent, db)
 	if err != nil {
 		return nil
 	}
-	s.Compile()
-	return s
+	db.Compile()
+	return db
 }

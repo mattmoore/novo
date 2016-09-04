@@ -14,7 +14,7 @@ func Connect(host string, dbname string) (sql.DB, error) {
 	return *db, err
 }
 
-func Dump(host string, dbname string) *Schema {
+func Dump(host string, dbname string) *Database {
 	conn, _ := Connect(host, dbname)
 	db := &Database{
 		Connection: conn,
@@ -22,22 +22,19 @@ func Dump(host string, dbname string) *Schema {
 	}
 	GetTables(db)
 	conn.Close()
-	s := &Schema{
-		Databases: []*Database{db},
-	}
-	s.Compile()
-	return s
+	db.Compile()
+	return db
 }
 
 func DumpFormat(host string, dbname string, format string) string {
-	s := Dump(host, dbname)
+	db := Dump(host, dbname)
 	switch format {
 	case "json":
-		return s.Json()
+		return db.Json()
 	case "sql":
-		return s.Sql()
+		return db.Sql()
 	default:
-		return s.Json()
+		return db.Json()
 	}
 }
 
